@@ -1,0 +1,48 @@
+/* 
+	Program: styles.css
+	Programmer: Mallory Kowalski
+	Date: April 15, 2022
+  Purpose: To create a scene view map with custom client-side feature layer(s) and 3D widgets.        
+*/
+
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 90%;
+  width: 100%;
+}
+
+#titleDiv {
+  height: 20%;
+}
+
+#subtitle {
+  margin-left: 3%;
+  color: black;
+}
+
+#title {
+  font-size: xx-large;
+  margin-left: 3%;
+  color: black;
+}
+
+#logoDiv{
+  float: right;
+  margin-right: 3%;
+  width: 40%;
+}
+
+#PHNXlogo {
+  float: right;
+  width: 200px;
+  margin-right: 2%;
+  margin-top: 2%;
+} 
+
+#COGSlogo {
+  float: right;
+  width: 130px;
+} 

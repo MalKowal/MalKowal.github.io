@@ -1,0 +1,41 @@
+<!--
+    Program: index.html
+    Programmer: Mallory Kowalski
+    Date: April 15, 2022
+    Purpose: To create a scene view map with custom client-side feature layer(s) and 3D widgets.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHNX Techologies - Pictou County</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.23/esri/themes/light/main.css">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="https://js.arcgis.com/4.23/"></script>
+    <script src="scripts/main.js"></script>
+
+
+</head>
+<body>
+    
+    <div id="logoDiv">
+        <img id="COGSlogo" src="images/cogs_logo.jpg">
+        <img id="PHNXlogo" src="images/PHNX_logo.png">
+    </div>
+
+    <div class="header">
+        <h1 id="title">Tower and Civic Locations</h1>
+        <h2 id="subtitle">In Pictou County, Nova Scotia</h2>
+    </div>
+
+    <div id="viewDiv"></div> 
+
+    <div id="basemapGalleryDiv"></div> 
+
+</body>
+</html>
