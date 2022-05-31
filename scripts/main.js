@@ -12,7 +12,6 @@ require(["esri/config",
     "esri/layers/FeatureLayer",
     "esri/widgets/BasemapToggle",
     "esri/widgets/DirectLineMeasurement3D",
-    "esri/widgets/Daylight",
     "esri/widgets/LineOfSight",
     "esri/widgets/ElevationProfile",
     "esri/widgets/Home",
@@ -70,10 +69,6 @@ require(["esri/config",
                         label: "Structure: ",
                     },
                     {
-                        fieldName: "structure",
-                        label: "Structure: ",
-                    },
-                    {
                         fieldName: "date_onlin",
                         label: "Expected Date Online: "
                     },
@@ -92,7 +87,7 @@ require(["esri/config",
                 {
                     type: "fields",
                     fieldInfos: [{
-                       fieldName: "CivicNumbe",
+                        fieldName: "CivicNumbe",
                         label: "Civic Number: "
                     },
                     {
@@ -189,8 +184,8 @@ require(["esri/config",
                 },
             }]
         };
-    
-        // Create tower symbol with time data
+
+        // Create tower symbol 
         const pictouTowerSymbol = {
             type: "point-3d", // autocasts as new PointSymbol3D()
             symbolLayers: [
@@ -216,7 +211,7 @@ require(["esri/config",
                 {
                     type: "object", // autocasts as new ObjectSymbol3DLayer()
                     width: 5,
-                    height: 50, //32 metres
+                    height: 32, //32 metres
                     size: 2,
                     resource: {
                         primitive: "cylinder"
@@ -253,8 +248,8 @@ require(["esri/config",
             symbolLayers: [
                 {
                     type: "object", // autocasts as new ObjectSymbol3DLayer()
-                    width: 6,
-                    height: 6,
+                    //width: 6,
+                    //height: 6,
                     resource: {
                         primitive: "cylinder"
                     },
@@ -264,15 +259,15 @@ require(["esri/config",
                 }
             ]
         };
-    
-        // Create civics symbol with time data
+
+        // Create civics symbol 
         const civicsWithDatesSymbol = {
             type: "point-3d", // autocasts as new PointSymbol3D()
             symbolLayers: [
                 {
                     type: "object", // autocasts as new ObjectSymbol3DLayer()
-                    width: 6,
-                    height: 6,
+                    //width: 6,
+                    //height: 6,
                     resource: {
                         primitive: "cylinder"
                     },
@@ -314,48 +309,48 @@ require(["esri/config",
         const pictouTowerRenderer = {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: pictouTowerSymbol,
-            //visualVariables: [
-                //{
-                    //type: "size",
-                    //field: "hgt_Orig"
-                //}
-            //]
+            visualVariables: [
+                {
+                    type: "size",
+                    field: "hgt_Orig"
+                }
+            ]
         };
 
         // create renderer for pictou towers
         const pictouTowerNoDateRenderer = {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: pictouTowerNoDateSymbol,
-            //visualVariables: [
-                //{
-                    //type: "size",
-                    //field: "hgt_Orig"
-                //}
-            //]
+            visualVariables: [
+                {
+                    type: "size",
+                    field: "hgt_Orig"
+                }
+            ]
         };
 
         // create renderer for pictou civic addresses
         const pictouCivicsRenderer = {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: civicsSymbol,
-            //visualVariables: [
-                //{
-                    //type: "size",
-                    //field: "civics_may"
-                //}
-            //]
+            visualVariables: [
+                {
+                    type: "size",
+                    field: "civics_may"
+                }
+            ]
         };
 
         // create renderer for pictou civic addresses with dates
         const pictouCivicsWithDatesRenderer = {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: civicsWithDatesSymbol,
-            //visualVariables: [
-                //{
-                    //type: "size",
-                    //field: "civics_may"
-                //}
-            //]
+            visualVariables: [
+                {
+                    type: "size",
+                    field: "civics_may"
+                }
+            ]
         };
 
         // Keeping code for future reference 
@@ -378,7 +373,7 @@ require(["esri/config",
             url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/civics_proper_date/FeatureServer/0",
             title: "Pictou Civics",
             renderer: pictouCivicsWithDatesRenderer,
-            //popupTemplate: civicsPopupTemplate,
+            popupTemplate: civicsPopupTemplate,
             copyright: "MOPC and Open Data Portal",
         });
 
@@ -392,12 +387,13 @@ require(["esri/config",
             copyright: "MOPC and Open Data Portal",
         });
 
+
         // Create Pictou Towers point feature layer 
         let pictouTowers = new FeatureLayer({
             url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/towers_with_date/FeatureServer/0",
             title: "Pictou Towers",
             renderer: pictouTowerRenderer,
-            //popupTemplate: towersPopupTemplate,
+            popupTemplate: towersPopupTemplate,
             copyright: "PHNX Technologies",
         });
 
@@ -435,11 +431,11 @@ require(["esri/config",
         // });
 
         // DSM Clutter Layer added as new Tile Layer
-        //let pictouDSMLayer = new TileLayer({
+        let pictouDSMLayer = new TileLayer({
             // Custom elevation service
-            //url: "https://tiles.arcgis.com/tiles/9PtzeAadJyclx9t7/arcgis/rest/services/Pictou_DSM_2m_ProjectRaster_2/MapServer"
-          //});
-        
+            url: "https://tiles.arcgis.com/tiles/9PtzeAadJyclx9t7/arcgis/rest/services/Pictou_DSM_2m_ProjectRaster_2/MapServer"
+          });
+
 
         // add NS Roads
         const NSRoads = new MapImageLayer({
@@ -460,9 +456,10 @@ require(["esri/config",
                 // new TileLayer({
                 //     url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
                 // }),
-                pictouBoundary, NSRoads, pictouCivics, pictouCivicsNoDates, pictouTowersNoDates, pictouTowers, pictouPoles,] //pictouDSMLayer],
+                pictouBoundary, NSRoads, pictouCivics, pictouCivicsNoDates, pictouTowersNoDates, pictouTowers, pictouPoles, pictouDSMLayer],
         });
 
+        //myMap.ground.layers.add(pictouDSMLayer);
 
         //myMap.layers.add(pictouRoads);
 
@@ -472,7 +469,7 @@ require(["esri/config",
             map: myMap,
             spatialReference: {
                 wkid: 3857
-             },
+            },
             // The id of a DOM element (may also be an actual DOM element)
             container: "viewDiv",
             camera: {
@@ -487,11 +484,12 @@ require(["esri/config",
 
         });
 
+        // turned off basemap toggle widget in hopes of getting raster layer to work.
         // create Basemap Toggle wideget
-        //let basemapToggle = new BasemapToggle({
-            //view: view,
-            //nextBasemap: "arcgis-topographic"
-        //});
+        // let basemapToggle = new BasemapToggle({
+        //     view: view,
+        //     nextBasemap: "arcgis-topographic"
+        // });
 
         // add Basemap toggle widget to map
         //view.ui.add(basemapToggle, { position: "top-right" });
@@ -544,8 +542,8 @@ require(["esri/config",
         let legend = new Legend({
             view: view
         });
-    
-            // // time slider widget initialization
+
+        // // time slider widget initialization
         const timeSlider = new TimeSlider({
             container: "timeSliderDiv",
             view: view,
@@ -570,14 +568,13 @@ require(["esri/config",
             group: "top-right"
         });
 
-        // create expand widget for measurement
+        // create expand widget for daylight
         const measurementExpand = new Expand({
             view: view,
             content: measurement,
             container: "widgetsDiv",
             group: "top-right"
         });
-
 
         // create expand widget for line of sight
         const lineOfSightExpand = new Expand({
@@ -602,7 +599,7 @@ require(["esri/config",
             container: "widgetsDiv",
             group: "bottom-left"
         });
-    
+
         // create search wdiget
         const searchWidget = new Search({
             view: view
@@ -615,10 +612,12 @@ require(["esri/config",
         });
 
         // add layer list and legend expand widgets to bottom left of map
-        view.ui.add([layerlistExpand, legendExpand, timeSlider,], "bottom-left"); 
+        view.ui.add([layerlistExpand, legendExpand, timeSlider,], "bottom-left");  
 
         // add elevation profile, daylight, and line of sight expand widgets to top right of map
         view.ui.add([elevationProfileExpand, measurementExpand, lineOfSightExpand,], "top-right");
+
+
 
     });
 
