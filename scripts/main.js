@@ -18,9 +18,13 @@ require(["esri/config",
     "esri/widgets/Expand",
     "esri/widgets/LayerList",
     "esri/widgets/Legend",
-    "esri/layers/MapImageLayer",],
+    "esri/layers/MapImageLayer",
+    "esri/widgets/Search",
+    "esri/widgets/TimeSlider",
+    "esri/layers/TileLayer",
+    "esri/layers/ElevationLayer"],
     function (esriConfig, Map, SceneView, WebTileLayer, FeatureLayer, BasemapToggle,
-        Daylight, LineOfSight, ElevationProfile, Home, Expand, LayerList, Legend, MapImageLayer) {
+        Daylight, LineOfSight, ElevationProfile, Home, Expand, LayerList, Legend, MapImageLayer, Search, TimeSlider, TileLayer, ElevationLayer) {
 
         // new esriConfig
         esriConfig.apiKey = "AAPK7dce78d141b04a0b828d6ed8612a1444E5EsipESmKv4j_PW3GtdLlL_e1Qqj0V7DM62fNqA4a7aG7e0GoW0LiHQn-nX1OAK";
@@ -65,12 +69,16 @@ require(["esri/config",
                         label: "Structure: ",
                     },
                     {
-                        fieldName: "best_server",
-                        label: "Best Server: "
+                        fieldName: "structure",
+                        label: "Structure: ",
                     },
                     {
-                        fieldName: "status",
-                        label: "Status: "
+                        fieldName: "date_onlin",
+                        label: "Expected Date Online: "
+                    },
+                    {
+                        fieldName: "hgt_orig",
+                        label: "Tower Height: "
                     }]
                 }
             ]
@@ -83,26 +91,38 @@ require(["esri/config",
                 {
                     type: "fields",
                     fieldInfos: [{
-                        fieldName: "address",
-                        label: "Address: "
+                       fieldName: "CivicNumbe",
+                        label: "Civic Number: "
                     },
                     {
-                        fieldName: "long",
+                        fieldName: "Street",
+                        label: "Street Name: "
+                    },
+                    {
+                        fieldName: "X",
                         label: "Longitude: ",
                         format: {
                             places: 5,
                         }
                     },
                     {
-                        fieldName: "lat",
+                        fieldName: "Y",
                         label: "Latitude: ",
                         format: {
                             places: 5,
                         }
                     },
                     {
-                        fieldName: "ruralcivic",
-                        label: "Rural Civic: ",
+                        fieldName: "serAvail",
+                        label: "Service Available: ",
+                    },
+                    {
+                        fieldName: "serDate",
+                        label: "Expected Date Online: "
+                    },
+                    {
+                        fieldName: "height_max",
+                        label: "Height: "
                     }]
                 }
             ]
@@ -168,6 +188,25 @@ require(["esri/config",
                 },
             }]
         };
+    
+        // Create tower symbol with time data
+        const pictouTowerSymbol = {
+            type: "point-3d", // autocasts as new PointSymbol3D()
+            symbolLayers: [
+                {
+                    type: "object", // autocasts as new ObjectSymbol3DLayer()
+                    width: 5,
+                    height: 32, //32 metres
+                    size: 2,
+                    resource: {
+                        primitive: "cylinder"
+                    },
+                    material: {
+                        color: "green"
+                    }
+                }
+            ]
+        };
 
         // Create tower symbol 
         const pictouTowerSymbol = {
@@ -179,7 +218,7 @@ require(["esri/config",
                     height: 50, //32 metres
                     size: 2,
                     resource: {
-                        primitive: "cube"
+                        primitive: "cylinder"
                     },
                     material: {
                         color: "red"
@@ -216,10 +255,28 @@ require(["esri/config",
                     width: 6,
                     height: 6,
                     resource: {
-                        primitive: "cube"
+                        primitive: "cylinder"
                     },
                     material: {
                         color: "blue"
+                    }
+                }
+            ]
+        };
+    
+        // Create civics symbol with time data
+        const civicsWithDatesSymbol = {
+            type: "point-3d", // autocasts as new PointSymbol3D()
+            symbolLayers: [
+                {
+                    type: "object", // autocasts as new ObjectSymbol3DLayer()
+                    width: 6,
+                    height: 6,
+                    resource: {
+                        primitive: "cylinder"
+                    },
+                    material: {
+                        color: "green"
                     }
                 }
             ]
@@ -281,7 +338,17 @@ require(["esri/config",
 
         // Create Pictou Civics points feature layer 
         let pictouCivics = new FeatureLayer({
-            url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/pictoucivics_points/FeatureServer/0",
+            url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/civics_proper_date/FeatureServer/0",
+            title: "Pictou Civics",
+            renderer: pictouCivicsWithDatesRenderer,
+            popupTemplate: civicsPopupTemplate,
+            copyright: "MOPC and Open Data Portal",
+        });
+
+        // Create Pictou Civics with no dates points feature layer 
+        let pictouCivicsNoDates = new FeatureLayer({
+            url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/civics_date_height/FeatureServer/0",
+            //url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/civics_no_date/FeatureServer/0",
             title: "Pictou Civics",
             renderer: pictouCivicsRenderer,
             popupTemplate: civicsPopupTemplate,
@@ -290,9 +357,18 @@ require(["esri/config",
 
         // Create Pictou Towers point feature layer 
         let pictouTowers = new FeatureLayer({
-            url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/towershapefiles/FeatureServer/0",
+            url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/towers_with_date/FeatureServer/0",
             title: "Pictou Towers",
             renderer: pictouTowerRenderer,
+            popupTemplate: towersPopupTemplate,
+            copyright: "PHNX Technologies",
+        });
+
+        // Create Pictou Towers point feature layer 
+        let pictouTowersNoDates = new FeatureLayer({
+            url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/towers_nodates/FeatureServer/0",
+            title: "Pictou Towers",
+            renderer: pictouTowerNoDateRenderer,
             popupTemplate: towersPopupTemplate,
             copyright: "PHNX Technologies",
         });
@@ -321,7 +397,11 @@ require(["esri/config",
         //     copyright: "MOPC and Open Data Portal",
         // });
 
-
+        // DSM Clutter Layer added as new Tile Layer
+        //let pictouDSMLayer = new TileLayer({
+            // Custom elevation service
+            //url: "https://tiles.arcgis.com/tiles/9PtzeAadJyclx9t7/arcgis/rest/services/Pictou_DSM_2m_ProjectRaster_2/MapServer"
+          //});
         
 
         // add NS Roads
@@ -339,8 +419,13 @@ require(["esri/config",
             basemap: "hybrid",
             ground: "world-elevation",
             // add feature layers to map
-            layers: [pictouBoundary, NSRoads, pictouCivics, pictouTowers, pictouPoles],
+            layers: [
+                // new TileLayer({
+                //     url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
+                // }),
+                pictouBoundary, NSRoads, pictouCivics, pictouCivicsNoDates, pictouTowersNoDates, pictouTowers, pictouPoles, pictouDSMLayer],
         });
+
 
         //myMap.layers.add(pictouRoads);
 
@@ -348,9 +433,9 @@ require(["esri/config",
         const view = new SceneView({
             // An instance of Map or WebScene
             map: myMap,
-            // spatialReference: {
-            //     wkid: 3857
-            // },
+            spatialReference: {
+                wkid: 3857
+             },
             // The id of a DOM element (may also be an actual DOM element)
             container: "viewDiv",
             camera: {
@@ -366,13 +451,13 @@ require(["esri/config",
         });
 
         // create Basemap Toggle wideget
-        let basemapToggle = new BasemapToggle({
-            view: view,
-            nextBasemap: "arcgis-topographic"
-        });
+        //let basemapToggle = new BasemapToggle({
+            //view: view,
+            //nextBasemap: "arcgis-topographic"
+        //});
 
         // add Basemap toggle widget to map
-        view.ui.add(basemapToggle, { position: "top-right" });
+        //view.ui.add(basemapToggle, { position: "top-right" });
 
         // add line of sight widget 
         const lineOfSight = new LineOfSight({
@@ -408,8 +493,9 @@ require(["esri/config",
         view.ui.add(homeWidget, "top-left");
 
         // create daylight widget
-        const daylight = new Daylight({
-            view: view
+        const measurement = new DirectLineMeasurement3D({
+            view: view,
+            activeTool: "distance"
         });
 
         // create layer list widget
@@ -421,6 +507,23 @@ require(["esri/config",
         let legend = new Legend({
             view: view
         });
+    
+            // // time slider widget initialization
+        const timeSlider = new TimeSlider({
+            container: "timeSliderDiv",
+            view: view,
+            // show data within a given time range
+            // in this case data within one year
+            mode: "time-window",
+            fullTimeExtent: { // entire extent of the timeSlider
+                start: new Date(2022, 5, 1),
+                end: new Date(2023, 5, 1)
+            },
+            timeExtent: { // location of timeSlider thumbs
+                start: new Date(2022, 5, 1),
+                end: new Date(2023, 5, 1)
+            }
+        });
 
         // create expand widget for elevation profile
         const elevationProfileExpand = new Expand({
@@ -430,13 +533,14 @@ require(["esri/config",
             group: "top-right"
         });
 
-        // create expand widget for daylight
-        const daylightExpand = new Expand({
+        // create expand widget for measurement
+        const measurementExpand = new Expand({
             view: view,
-            content: daylight,
+            content: measurement,
             container: "widgetsDiv",
             group: "top-right"
         });
+
 
         // create expand widget for line of sight
         const lineOfSightExpand = new Expand({
@@ -461,12 +565,23 @@ require(["esri/config",
             container: "widgetsDiv",
             group: "bottom-left"
         });
+    
+        // create search wdiget
+        const searchWidget = new Search({
+            view: view
+        });
+        // Adds the search widget below other elements in
+        // the top left corner of the view
+        view.ui.add(searchWidget, {
+            position: "bottom-right",
+            index: 2
+        });
 
         // add layer list and legend expand widgets to bottom left of map
-        view.ui.add([layerlistExpand, legendExpand,], "bottom-left");
+        view.ui.add([layerlistExpand, legendExpand, timeSlider,], "bottom-left"); 
 
         // add elevation profile, daylight, and line of sight expand widgets to top right of map
-        view.ui.add([elevationProfileExpand, daylightExpand, lineOfSightExpand,], "top-right");
+        view.ui.add([elevationProfileExpand, measurementExpand, lineOfSightExpand,], "top-right");
 
     });
 
