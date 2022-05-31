@@ -373,7 +373,7 @@ require(["esri/config",
             url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/civics_proper_date/FeatureServer/0",
             title: "Pictou Civics",
             renderer: pictouCivicsWithDatesRenderer,
-            popupTemplate: civicsPopupTemplate,
+            //popupTemplate: civicsPopupTemplate,
             copyright: "MOPC and Open Data Portal",
         });
 
@@ -393,7 +393,7 @@ require(["esri/config",
             url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/towers_with_date/FeatureServer/0",
             title: "Pictou Towers",
             renderer: pictouTowerRenderer,
-            popupTemplate: towersPopupTemplate,
+            //popupTemplate: towersPopupTemplate,
             copyright: "PHNX Technologies",
         });
 
@@ -431,10 +431,10 @@ require(["esri/config",
         // });
 
         // DSM Clutter Layer added as new Tile Layer
-        let pictouDSMLayer = new TileLayer({
+        //let pictouDSMLayer = new TileLayer({
             // Custom elevation service
-            url: "https://tiles.arcgis.com/tiles/9PtzeAadJyclx9t7/arcgis/rest/services/Pictou_DSM_2m_ProjectRaster_2/MapServer"
-          });
+            //url: "https://tiles.arcgis.com/tiles/9PtzeAadJyclx9t7/arcgis/rest/services/Pictou_DSM_2m_ProjectRaster_2/MapServer"
+          //});
 
 
         // add NS Roads
@@ -456,7 +456,7 @@ require(["esri/config",
                 // new TileLayer({
                 //     url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
                 // }),
-                pictouBoundary, NSRoads, pictouCivics, pictouCivicsNoDates, pictouTowersNoDates, pictouTowers, pictouPoles, pictouDSMLayer],
+                pictouBoundary, NSRoads, pictouCivics, pictouCivicsNoDates, pictouTowersNoDates, pictouTowers, pictouPoles,] //pictouDSMLayer],
         });
 
         //myMap.ground.layers.add(pictouDSMLayer);
