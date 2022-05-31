@@ -11,6 +11,7 @@ require(["esri/config",
     "esri/layers/WebTileLayer",
     "esri/layers/FeatureLayer",
     "esri/widgets/BasemapToggle",
+    "esri/widgets/DirectLineMeasurement3D",
     "esri/widgets/Daylight",
     "esri/widgets/LineOfSight",
     "esri/widgets/ElevationProfile",
@@ -24,7 +25,7 @@ require(["esri/config",
     "esri/layers/TileLayer",
     "esri/layers/ElevationLayer"],
     function (esriConfig, Map, SceneView, WebTileLayer, FeatureLayer, BasemapToggle,
-        Daylight, LineOfSight, ElevationProfile, Home, Expand, LayerList, Legend, MapImageLayer, Search, TimeSlider, TileLayer, ElevationLayer) {
+        DirectLineMeasurement3D, LineOfSight, ElevationProfile, Home, Expand, LayerList, Legend, MapImageLayer, Search, TimeSlider, TileLayer, ElevationLayer) {
 
         // new esriConfig
         esriConfig.apiKey = "AAPK7dce78d141b04a0b828d6ed8612a1444E5EsipESmKv4j_PW3GtdLlL_e1Qqj0V7DM62fNqA4a7aG7e0GoW0LiHQn-nX1OAK";
@@ -209,7 +210,7 @@ require(["esri/config",
         };
 
         // Create tower symbol 
-        const pictouTowerSymbol = {
+        const pictouTowerNoDateSymbol = {
             type: "point-3d", // autocasts as new PointSymbol3D()
             symbolLayers: [
                 {
@@ -312,13 +313,49 @@ require(["esri/config",
         // create renderer for pictou towers
         const pictouTowerRenderer = {
             type: "simple", // autocasts as new SimpleRenderer()
-            symbol: pictouTowerSymbol
+            symbol: pictouTowerSymbol,
+            //visualVariables: [
+                //{
+                    //type: "size",
+                    //field: "hgt_Orig"
+                //}
+            //]
+        };
+
+        // create renderer for pictou towers
+        const pictouTowerNoDateRenderer = {
+            type: "simple", // autocasts as new SimpleRenderer()
+            symbol: pictouTowerNoDateSymbol,
+            //visualVariables: [
+                //{
+                    //type: "size",
+                    //field: "hgt_Orig"
+                //}
+            //]
         };
 
         // create renderer for pictou civic addresses
         const pictouCivicsRenderer = {
             type: "simple", // autocasts as new SimpleRenderer()
-            symbol: civicsSymbol
+            symbol: civicsSymbol,
+            //visualVariables: [
+                //{
+                    //type: "size",
+                    //field: "civics_may"
+                //}
+            //]
+        };
+
+        // create renderer for pictou civic addresses with dates
+        const pictouCivicsWithDatesRenderer = {
+            type: "simple", // autocasts as new SimpleRenderer()
+            symbol: civicsWithDatesSymbol,
+            //visualVariables: [
+                //{
+                    //type: "size",
+                    //field: "civics_may"
+                //}
+            //]
         };
 
         // Keeping code for future reference 
@@ -341,7 +378,7 @@ require(["esri/config",
             url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/civics_proper_date/FeatureServer/0",
             title: "Pictou Civics",
             renderer: pictouCivicsWithDatesRenderer,
-            popupTemplate: civicsPopupTemplate,
+            //popupTemplate: civicsPopupTemplate,
             copyright: "MOPC and Open Data Portal",
         });
 
@@ -360,7 +397,7 @@ require(["esri/config",
             url: "https://services3.arcgis.com/K5W1VzTTp09kCUqY/arcgis/rest/services/towers_with_date/FeatureServer/0",
             title: "Pictou Towers",
             renderer: pictouTowerRenderer,
-            popupTemplate: towersPopupTemplate,
+            //popupTemplate: towersPopupTemplate,
             copyright: "PHNX Technologies",
         });
 
@@ -423,7 +460,7 @@ require(["esri/config",
                 // new TileLayer({
                 //     url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
                 // }),
-                pictouBoundary, NSRoads, pictouCivics, pictouCivicsNoDates, pictouTowersNoDates, pictouTowers, pictouPoles, pictouDSMLayer],
+                pictouBoundary, NSRoads, pictouCivics, pictouCivicsNoDates, pictouTowersNoDates, pictouTowers, pictouPoles,] //pictouDSMLayer],
         });
 
 
